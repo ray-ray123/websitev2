@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getStorage, ref, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
+        import { getAuth, deleteUser } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqnOCrqFVQp6RER3Bcc8h6bIL0qtr20GM",
+            authDomain: "wevc-9011c.firebaseapp.com",
+            projectId: "wevc-9011c",
+            storageBucket: "wevc-9011c.appspot.com",
+            messagingSenderId: "82019226601",
+            appId: "1:82019226601:web:274e9ac01c5158567c7178",
+            measurementId: "G-JL76E20HBW"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+        const auth = getAuth(app);
+
+        // Function to handle sign-in with username and password
+        window.handleSignIn = (username, password) => {
+            console.log('Attempting to sign in with username:', username);
+            const fileRef = ref(storage, `credentials/${username}_account_credentials.txt`);
+
+            // Fetch the file containing the user's credentials
+            getDownloadURL(fileRef)
+                .then((url) => {
+                    console.log('File URL retrieved:', url);
+                    return fetch(url);
+                })
+                .then((response) => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then((storedData) => {
+                    console.log('Stored data retrieved:', storedData);
+                    
+                    // Parse the stored data to get the password
+                    const lines = storedData.split('\n');
+                    let storedPassword = '';
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('Password:')) {
+                            storedPassword = line.split(': ')[1].trim(); // Extract the password
+                            break;
+                        }
+                    }
+                    
+                    console.log('Extracted stored password:', storedPassword);
+                    
+                    if (storedPassword === password) {
+                        alert('Signed in successfully!');
+                        window.location.href = 'homepage.html'; // Redirect to homepage after sign-in
+                    } else {
+                        document.getElementById('error-message').textContent = 'Invalid username or password.';
+                    }
+                })
+                .catch((error) => {
+                    document.getElementById('error-message').textContent = 'User not found or an error occurred.';
+                    console.error('Error fetching user data:', error);
+                });
+        };
+
+        // Function to handle account deletion
+        window.handleDeleteAccount = () => {
+            const username = document.getElementById('username').value; // Get the username directly from input
+            const fileRef = ref(storage, `credentials/${username}_account_credentials.txt`);
+
+            deleteObject(fileRef).then(() => {
+                alert('Credentials deleted successfully!');
+                // Optionally redirect to sign-in page
+                window.location.href = 'index.html'; 
+            }).catch((error) => {
+                console.error('Error deleting credentials file:', error);
+                alert('Could not delete credentials file.');
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('loginForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                handleSignIn(username, password);
+            });
+            document.getElementById('deleteAccountButton').addEventListener('click', function (e) {
+                e.preventDefault();
+                handleDeleteAccount();
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Sign In</h2>
+        <form id="loginForm">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your username" required>
+            
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+            
+            <button type="submit">Sign In</button>
+            <button type="button" onclick="window.location.href='index.html'">Back to Create Account</button>
+        </form>
+        <p id="error-message"></p>
+
+        <div id="deleteAccountSection" style="display: none;">
+            <h3>Account Management</h3>
+            <button id="deleteAccountButton">Delete Account</button>
+        </div>
+    </div>
+</body>
+</html>

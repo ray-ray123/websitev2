@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Simple Banking System</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<div class="container">
+		<h1>Simple Banking System</h1>
+		<label for="balanceInput">Enter Transaction Amount:</label>
+		<input type="number" id="balanceInput" placeholder="Enter transaction amount">
+		<button id="saveBtn">Add to Balance</button>
+		<div id="balanceDisplay" class="response"></div>
+	</div>
+
+	<script>
+		// Retrieve balance from localStorage when the page loads
+		document.addEventListener('DOMContentLoaded', function() {
+			const savedBalance = localStorage.getItem('bankBalance');
+			if (savedBalance) {
+				document.getElementById('balanceDisplay').textContent = `Current Balance: $${savedBalance}`;
+			}
+		});
+
+		// Function to add amount to balance
+		function addAmountToBalance(amount) {
+			const currentBalance = parseFloat(localStorage.getItem('bankBalance')) || 0;
+			const newBalance = currentBalance + amount;
+			localStorage.setItem('bankBalance', newBalance);
+			document.getElementById('balanceDisplay').textContent = `Current Balance: $${newBalance}`;
+		}
+
+		// You can call this function from another page to add a specific amount to the balance
+		// Example usage: addAmountToBalance(100);
+	</script>
+</body>
+</html>

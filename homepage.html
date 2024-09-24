@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
+    <style>
+        /* Basic styles for layout */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4; /* Light background */
+            color: #333; /* Dark text color */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff; /* White background */
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            padding: 20px;
+            width: 90%;
+            max-width: 400px; /* Responsive max width */
+        }
+
+        .profile-icon {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .dropdown {
+            display: none; /* Hidden by default */
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .dropdown-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f1f1f1; /* Highlight on hover */
+        }
+
+        .sign-in-btn {
+            margin-bottom: 20px;
+        }
+
+        /* Input styles */
+        input[type="number"] {
+            width: 100%; /* Full width */
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px; /* Rounded corners */
+            transition: border-color 0.3s; /* Smooth transition */
+        }
+
+        input[type="number"]:focus {
+            border-color: #4CAF50; /* Change border color on focus */
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-icon" id="profileIcon">👤</div>
+    <div class="dropdown" id="dropdownMenu">
+        <div class="dropdown-item" onclick="editAccount()">Manage Settings</div>
+        <div class="dropdown-item" onclick="deleteAccount()">Delete Account</div>
+    </div>
+    <button class="sign-in-btn" onclick="redirectToSignIn()">Sign In</button>
+
+    <div class="container">
+        <h1>Banking System</h1>
+        <div id="balanceDisplay">Current Balance: $0.00</div> <!-- Balance display -->
+        <label for="addBalanceInput">Add Balance:</label>
+        <input type="number" id="addBalanceInput" placeholder="Enter amount to add">
+        <button id="addBalanceBtn" onclick="addBalance()">Add to Balance</button>
+    </div>
+
+    <script>
+        const profileIcon = document.getElementById('profileIcon');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        // Show dropdown on profile icon click
+        profileIcon.addEventListener('click', () => {
+            dropdownMenu.style.display = dropdownMenu.style.display === 'none' || dropdownMenu.style.display === '' ? 'block' : 'none';
+        });
+
+        // Redirect to sign-in page
+        function redirectToSignIn() {
+            window.location.href = 'sign-in.html'; // Change to your sign-in page URL
+        }
+
+        // Function to handle account settings
+        function editAccount() {
+            window.location.href = 'edit_account.html'; // Change to your edit account page URL
+        }
+
+        // Function to handle account deletion
+        function deleteAccount() {
+            alert('Account deletion functionality not implemented yet.');
+        }
+
+        // Close dropdown when clicking outside of it
+        window.onclick = function(event) {
+            if (!event.target.matches('.profile-icon')) {
+                dropdownMenu.style.display = 'none';
+            }
+        };
+
+        // Function to add balance using the input value
+        function addBalance() {
+            const addBalanceInput = parseFloat(document.getElementById('addBalanceInput').value);
+            if (!isNaN(addBalanceInput)) {
+                addAmountToBalance(addBalanceInput);
+                document.getElementById('addBalanceInput').value = ''; // Clear the input
+            }
+        }
+
+        // Function to update the balance and display it
+        function addAmountToBalance(amount) {
+            const currentBalance = parseFloat(localStorage.getItem('bankBalance')) || 0;
+            const newBalance = currentBalance + amount;
+            localStorage.setItem('bankBalance', newBalance);
+
+            // Update the balance display
+            document.getElementById('balanceDisplay').textContent = `Current Balance: $${newBalance.toFixed(2)}`;
+        }
+
+        // Display current balance on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedBalance = localStorage.getItem('bankBalance') || 0;
+            document.getElementById('balanceDisplay').textContent = `Current Balance: $${parseFloat(savedBalance).toFixed(2)}`;
+        });
+    </script>
+</body>
+</html>

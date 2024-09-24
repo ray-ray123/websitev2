@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { getStorage, ref, uploadString } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqnOCrqFVQp6RER3Bcc8h6bIL0qtr20GM",
+            authDomain: "wevc-9011c.firebaseapp.com",
+            projectId: "wevc-9011c",
+            storageBucket: "wevc-9011c.appspot.com",
+            messagingSenderId: "82019226601",
+            appId: "1:82019226601:web:274e9ac01c5158567c7178",
+            measurementId: "G-JL76E20HBW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+
+        window.handleCreateAccount = (username, email, password) => {
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    alert('Account created successfully!');
+
+                    const data = `Email: ${email}\nPassword: ${password}\nUsername: ${username}`;
+                    const storageRef = ref(storage, `credentials/${username}_account_credentials.txt`);
+                    uploadString(storageRef, data).then(() => {
+                        console.log('Credentials uploaded to Firebase Storage!');
+                    }).catch((error) => {
+                        console.error('Error uploading credentials:', error);
+                    });
+                })
+                .catch((error) => {
+                    document.getElementById('error-message').textContent = error.message;
+                });
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('accountForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                handleCreateAccount(username, email, password);
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Create Account</h2>
+        <form id="accountForm">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your username" required>
+                
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+                
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+                
+            <button type="submit">Create Account</button>
+        </form>
+        <p id="error-message"></p>
+        <div class="button-container">
+            <button onclick="window.location.href='delete_account.html'">Delete Account</button>
+            <button onclick="window.location.href='edit_account.html'">Edit Account</button>
+            <button onclick="window.location.href='sign-in.html'">Go to Sign In</button>
+        </div>
+    </div>
+</body>
+</html>

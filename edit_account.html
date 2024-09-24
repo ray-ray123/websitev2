@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Account</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getAuth, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqnOCrqFVQp6RER3Bcc8h6bIL0qtr20GM",
+            authDomain: "wevc-9011c.firebaseapp.com",
+            projectId: "wevc-9011c",
+            storageBucket: "wevc-9011c.appspot.com",
+            messagingSenderId: "82019226601",
+            appId: "1:82019226601:web:274e9ac01c5158567c7178",
+            measurementId: "G-JL76E20HBW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.handleEditAccount = (newEmail, newPassword, currentPassword) => {
+            const user = auth.currentUser;
+            if (user) {
+                console.log('Current User:', user);
+                console.log('Current User Email:', user.email);
+                
+                const credential = EmailAuthProvider.credential(user.email, currentPassword);
+                
+                // Attempt to re-authenticate the user
+                reauthenticateWithCredential(user, credential).then(() => {
+                    console.log('Re-authentication successful'); // Debugging log
+
+                    if (newEmail) {
+                        updateEmail(user, newEmail).then(() => {
+                            alert('Email updated successfully!');
+                        }).catch((error) => {
+                            alert(`Error updating email: ${error.message}`);
+                            console.error('Error updating email:', error);
+                        });
+                    }
+
+                    if (newPassword) {
+                        updatePassword(user, newPassword).then(() => {
+                            alert('Password updated successfully!');
+                        }).catch((error) => {
+                            alert(`Error updating password: ${error.message}`);
+                            console.error('Error updating password:', error);
+                        });
+                    }
+                }).catch((error) => {
+                    alert('Re-authentication failed. Please check your current password.');
+                    console.error('Error during re-authentication:', error);
+                });
+            } else {
+                alert('No user is currently signed in.');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('editAccountForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const newEmail = document.getElementById('newEmail').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const currentPassword = document.getElementById('currentPassword').value;
+        
+
+        console.log('Attempting to reauthenticate with:');
+        const user = auth.currentUser;  
+        
+        console.log(user.providerData);// Get the current user here
+        if (user) {
+            console.log('Email:', user.email);
+        } else {
+            console.log('No user is currently signed in.');
+        }
+        console.log('Current Password:', currentPassword ? '********' : 'None');
+
+        handleEditAccount(newEmail, newPassword, currentPassword);
+    });
+});
+
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Edit Account</h2>
+        <form id="editAccountForm">
+            <label for="currentPassword">Current Password</label>
+            <input type="password" id="currentPassword" placeholder="Enter your current password" required>
+
+            <label for="newEmail">New Email</label>
+            <input type="email" id="newEmail" placeholder="Enter new email">
+                
+            <label for="newPassword">New Password</label>
+            <input type="password" id="newPassword" placeholder="Enter new password">
+                
+            <button type="submit">Update Account</button>
+        </form>
+    </div>
+</body>
+</html>

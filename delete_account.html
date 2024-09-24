@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Account</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getAuth, deleteUser } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+        import { getStorage, ref, deleteObject } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqnOCrqFVQp6RER3Bcc8h6bIL0qtr20GM",
+            authDomain: "wevc-9011c.firebaseapp.com",
+            projectId: "wevc-9011c",
+            storageBucket: "wevc-9011c.appspot.com",
+            messagingSenderId: "82019226601",
+            appId: "1:82019226601:web:274e9ac01c5158567c7178",
+            measurementId: "G-JL76E20HBW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+
+        window.handleDeleteAccount = () => {
+            const user = auth.currentUser;
+            if (user) {
+                // Define the path to the credentials file
+                const fileRef = ref(storage, `credentials/${user.email}_account_credentials.txt`);
+
+                // Delete the credentials file
+                deleteObject(fileRef).then(() => {
+                    // After deleting the file, delete the user
+                    deleteUser(user).then(() => {
+                        alert('Account and credentials file deleted successfully!');
+                        window.location.href = 'index.html'; // Redirect or perform another action
+                    }).catch((error) => {
+                        console.error('Error deleting account:', error);
+                        alert('An error occurred while deleting the account.');
+                    });
+                }).catch((error) => {
+                    console.error('Error deleting credentials file:', error);
+                    alert('Could not delete credentials file.');
+                });
+            } else {
+                alert('No user is currently signed in.');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('deleteAccountButton').addEventListener('click', function (e) {
+                e.preventDefault();
+                handleDeleteAccount();
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Delete Account</h2>
+        <button id="deleteAccountButton">Delete Account</button>
+    </div>
+</body>
+</html>
