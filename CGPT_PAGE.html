@@ -157,7 +157,22 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const storage = getStorage(app);
+        async function sendEmail(email, amount) {
+            const templateParams = {
+                to_email: email,
+                amount: amount,
+                
+            };
 
+            // Select template based on transaction type
+
+            try {
+                const response = await emailjs.send('service_8y32elk', 'template_deposit', templateParams);
+                console.log('Email sent successfully:', response);
+            } catch (error) {
+                console.error('Failed to send email:', error);
+            }
+        }
         document.addEventListener('DOMContentLoaded', () => {
             const email = localStorage.getItem('userEmail');
             const password = localStorage.getItem('userPassword');
