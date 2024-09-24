@@ -149,24 +149,46 @@
   });
 })();
 </script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
-        import { getStorage, ref, uploadString, getDownloadURL, listAll } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-storage.js";
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+    import { getStorage, ref, uploadString, getDownloadURL, listAll } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-storage.js";
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBqnOCrqFVQp6RER3Bcc8h6bIL0qtr20GM",
-            authDomain: "wevc-9011c.firebaseapp.com",
-            projectId: "wevc-9011c",
-            storageBucket: "wevc-9011c.appspot.com",
-            messagingSenderId: "82019226601",
-            appId: "1:82019226601:web:274e9ac01c5158567c7178",
-            measurementId: "G-JL76E20HBW"
-        };
-        
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const storage = getStorage(app);
+    const firebaseConfig = {
+        apiKey: "AIzaSyBqnOCrqFVQp6RER3Bcc8h6bIL0qtr20GM",
+        authDomain: "wevc-9011c.firebaseapp.com",
+        projectId: "wevc-9011c",
+        storageBucket: "wevc-9011c.appspot.com",
+        messagingSenderId: "82019226601",
+        appId: "1:82019226601:web:274e9ac01c5158567c7178",
+        measurementId: "G-JL76E20HBW"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const storage = getStorage(app);
+    const googleProvider = new GoogleAuthProvider();
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('loginGoogleBtn').addEventListener('click', loginWithGoogle);
+    });
+
+    async function loginWithGoogle() {
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+            localStorage.setItem('userEmail', user.email);
+            alert(`Logged in with Google: ${user.email}`);
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('bankingContainer').style.display = 'block';
+            document.getElementById('loggedInMessage').textContent = `Logged in as: ${user.email}`;
+        } catch (error) {
+            console.error('Google sign-in failed:', error);
+        }
+    }
+
+
         async function sendEmail(email, amount) {
             const templateParams = {
                 to_email: email,
@@ -410,6 +432,10 @@
     <div id="loggedInMessage"></div>
     <div id="authContainer" class="container">
         <h1>Banking App</h1>
+        <button id="loginGoogleBtn" style="background-color: #4285F4; color: white; font-weight: 500; margin-top: 10px;">
+            Sign in with Google
+        </button>
+        
         <div class="input-container">
             <i class="fas fa-user"></i>
             <input type="email" id="emailInput" placeholder="Email" required>
@@ -418,8 +444,10 @@
             <i class="fas fa-lock"></i>
             <input type="password" id="passwordInput" placeholder="Password" required>
         </div>
+        
         <button id="registerBtn">Register</button>
         <button id="loginBtn">Login</button>
+        
     </div>
     <div id="bankingContainer" class="container" style="display: none;">
         <h1>Welcome Back!</h1>
@@ -436,6 +464,7 @@
         <button id="backBtn">Logout</button>
         <button id="toggleRoutingBtn">Show/Hide Routing Number</button>
         <button id="scanRoutingBtn">Scan Routing Number</button>
+        
     </div>
 </body>
 </html>
