@@ -139,6 +139,16 @@
             color: #4CAF50;
         }
     </style>
+    <script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+<script type="text/javascript">
+(function(){
+  emailjs.init({
+    publicKey: "YOUR_PUBLIC_KEY",
+  });
+})();
+</script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
         import { getStorage, ref, uploadString, getDownloadURL, listAll } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-storage.js";
@@ -153,7 +163,7 @@
             appId: "1:82019226601:web:274e9ac01c5158567c7178",
             measurementId: "G-JL76E20HBW"
         };
-
+        
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const storage = getStorage(app);
